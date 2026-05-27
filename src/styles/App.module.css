@@ -1,0 +1,73 @@
+.appWorkspace {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #121214;
+}
+
+.navDock {
+  width: 80px;
+  background-color: #1a1a1e;
+  border-right: 1px solid rgba(39, 39, 42, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+  gap: 1.5rem;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.logoMark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(to top right, #4f46e5, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: white;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.navItem {
+  padding: 0.875rem;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: #71717a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navItem:hover {
+  color: #d4d4d8;
+}
+
+.navItemActive {
+  padding: 0.875rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4f46e5;
+  color: white;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.viewStage {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #121214;
+}

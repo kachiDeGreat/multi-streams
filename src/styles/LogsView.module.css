@@ -1,0 +1,97 @@
+.logsContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #09090b;
+  padding: 1.5rem;
+}
+
+.terminalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #27272a;
+  margin-bottom: 1rem;
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #e1e1e6;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.headerControls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.clearBtn {
+  background-color: transparent;
+  border: 1px solid #3f3f46;
+  color: #a1a1aa;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clearBtn:hover {
+  background-color: #27272a;
+  color: white;
+}
+
+.terminalWindow {
+  flex: 1;
+  background-color: #000000;
+  border: 1px solid #27272a;
+  border-radius: 8px;
+  padding: 1.25rem;
+  overflow-y: auto;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.logLine {
+  display: flex;
+  gap: 1rem;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.timestamp {
+  color: #52525b;
+  min-width: 85px;
+}
+
+.level_info {
+  color: #3b82f6;
+  min-width: 60px;
+}
+
+.level_success {
+  color: #10b981;
+  min-width: 60px;
+}
+
+.level_warn {
+  color: #f59e0b;
+  min-width: 60px;
+}
+
+.level_error {
+  color: #ef4444;
+  min-width: 60px;
+}
+
+.message {
+  color: #d4d4d8;
+}
