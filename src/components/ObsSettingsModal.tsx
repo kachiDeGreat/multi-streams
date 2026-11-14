@@ -16,7 +16,7 @@ export const ObsSettingsModal = ({
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
-          <h2>Recommended OBS Settings</h2>
+          <h2>Recommended Streaming Software Settings</h2>
           <button className={styles.closeButton} onClick={onClose}>
             <X size={20} />
           </button>

@@ -22,9 +22,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
 
     let nginxConfigString = "";
+    const warnings: string[] = [];
 
     activeDestinations.forEach((dest: StreamDestination) => {
-      if (!dest.rtmpUrl || !dest.streamKey) return;
+      const cleanKey = (dest.streamKey || "").trim();
+      if (!cleanKey) {
+        warnings.push(
+          `${dest.platform || "Destination"} was not pushed: Stream key is missing!`,
+        );
+        return;
+      }
+
+      if (!dest.rtmpUrl) {
+        warnings.push(
+          `${dest.platform || "Destination"} was not pushed: Ingest URL is missing!`,
+        );
+        return;
+      }
 
       const baseUrl = dest.rtmpUrl.endsWith("/")
         ? dest.rtmpUrl
@@ -35,9 +49,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         dest.platform.toLowerCase() === "facebook" ||
         baseUrl.startsWith("rtmps://")
       ) {
-        pushUrl = `rtmp://127.0.0.1:1936/rtmp/${dest.streamKey}`;
+        pushUrl = `rtmp://127.0.0.1:19350/rtmp/${cleanKey}`;
       } else {
-        pushUrl = `${baseUrl}${dest.streamKey}`;
+        pushUrl = `${baseUrl}${cleanKey}`;
       }
 
       nginxConfigString += `push ${pushUrl};\n`;
@@ -94,12 +108,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .connect({
           host: process.env.AWS_HOST,
           port: 22,
-          username: process.env.AWS_USER || "ubuntu",
+          username: process.env.AWS_USER || "admin",
           privateKey: privateKey,
+          readyTimeout: 30000,
         });
     });
 
-    return res.status(200).json({ success: true, message: "Routes active." });
+    return res
+      .status(200)
+      .json({ success: true, warnings, message: "Routes active." });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("SYNC ROUTER CRASHED:", error);

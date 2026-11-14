@@ -1,110 +1,189 @@
-import { useState, useEffect } from "react";
-import { Activity, Volume2 } from "lucide-react";
+import {
+  CheckCircle2,
+  AlertTriangle,
+  Radio,
+  WifiOff,
+  Clock,
+  ShieldCheck,
+  Activity,
+} from "lucide-react";
 import styles from "../styles/DashboardView.module.css";
 
+export type StreamHealthStatus =
+  | "OFFLINE"
+  | "EXCELLENT"
+  | "GOOD"
+  | "FAIR"
+  | "RECONNECTING";
+
 interface MetricsPanelProps {
-  videoBitrate: number;
-  audioBitrate: number;
+  healthStatus?: StreamHealthStatus;
+  reconnectTimeRemaining?: number;
 }
 
 export const MetricsPanel = ({
-  videoBitrate,
-  audioBitrate,
+  healthStatus = "OFFLINE",
+  reconnectTimeRemaining = 0,
 }: MetricsPanelProps) => {
-  // Keep a history of the last 20 data points to draw the graph
-  const [videoHistory, setVideoHistory] = useState<number[]>(Array(20).fill(0));
-  const [audioHistory, setAudioHistory] = useState<number[]>(Array(20).fill(0));
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setVideoHistory((prev) => [...prev.slice(1), videoBitrate]);
-  }, [videoBitrate]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setAudioHistory((prev) => [...prev.slice(1), audioBitrate]);
-  }, [audioBitrate]);
-
-  // Determine if the signal is weak (only color it red if it's actively trying to stream > 0)
-  const isVideoLow = videoBitrate > 0 && videoBitrate < 2000;
-  const isAudioLow = audioBitrate > 0 && audioBitrate < 128;
-
-  const maxVideo = Math.max(...videoHistory, 6000); // Scale graph up to at least 6000 kbps
-  const maxAudio = Math.max(...audioHistory, 320); // Scale graph up to at least 320 kbps
-
-  const renderGraph = (history: number[], max: number, color: string) => {
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          height: "40px",
-          gap: "2px",
-          marginTop: "12px",
-        }}
-      >
-        {history.map((val, i) => {
-          const heightPct = max > 0 ? Math.max((val / max) * 100, 2) : 2;
-          return (
-            <div
-              key={i}
-              style={{
-                flex: 1,
-                backgroundColor: color,
-                height: `${heightPct}%`,
-                opacity: 0.8,
-                borderRadius: "2px 2px 0 0",
-                transition: "height 0.3s ease, background-color 0.3s ease",
-              }}
-            />
-          );
-        })}
-      </div>
-    );
+  const getHealthConfig = (health: StreamHealthStatus) => {
+    switch (health) {
+      case "EXCELLENT":
+        return {
+          label: "Excellent Connection",
+          color: "#22c55e",
+          bg: "rgba(34, 197, 94, 0.12)",
+          border: "rgba(34, 197, 94, 0.3)",
+          icon: <CheckCircle2 size={16} color="#22c55e" />,
+          desc: "Stream is healthy. High bandwidth and stable keyframes ready for multi-platform delivery.",
+        };
+      case "GOOD":
+        return {
+          label: "Good Connection",
+          color: "#38bdf8",
+          bg: "rgba(56, 189, 248, 0.12)",
+          border: "rgba(56, 189, 248, 0.3)",
+          icon: <Activity size={16} color="#38bdf8" />,
+          desc: "Stream signal is stable and streaming smoothly across active destinations.",
+        };
+      case "FAIR":
+        return {
+          label: "Fair (High Latency)",
+          color: "#f59e0b",
+          bg: "rgba(245, 158, 11, 0.12)",
+          border: "rgba(245, 158, 11, 0.3)",
+          icon: <AlertTriangle size={16} color="#f59e0b" />,
+          desc: "Connection latency detected. Check church upload bandwidth.",
+        };
+      case "RECONNECTING":
+        return {
+          label: "Stream Interrupted (Reconnecting...)",
+          color: "#f97316",
+          bg: "rgba(249, 115, 22, 0.15)",
+          border: "rgba(249, 115, 22, 0.4)",
+          icon: <WifiOff size={16} color="#f97316" />,
+          desc: `Encoder connection interrupted (router/Wi-Fi lost). Holding your live session: ${reconnectTimeRemaining}s remaining.`,
+        };
+      case "OFFLINE":
+      default:
+        return {
+          label: "Standby (Awaiting Signal)",
+          color: "#71717a",
+          bg: "rgba(113, 113, 122, 0.12)",
+          border: "rgba(113, 113, 122, 0.25)",
+          icon: <Radio size={16} color="#a1a1aa" />,
+          desc: "Ready for incoming RTMP broadcast. Click Start Streaming in your streaming software (vMix, OBS, etc.).",
+        };
+    }
   };
+
+  const healthConfig = getHealthConfig(healthStatus);
 
   return (
     <div className={styles.metricsList}>
-      <div className={styles.metricItem}>
-        <div className={styles.metricHeader}>
-          <span>Video Bitrate</span>
-          <Activity size={16} color={isVideoLow ? "#ef4444" : "#818cf8"} />
-        </div>
+      {/* Stream Health Card */}
+      <div
+        style={{
+          backgroundColor: healthConfig.bg,
+          border: `1px solid ${healthConfig.border}`,
+          borderRadius: "10px",
+          padding: "1.15rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.75rem",
+          transition: "all 0.3s ease",
+        }}
+      >
         <div
-          className={styles.metricValue}
           style={{
-            color: isVideoLow ? "#ef4444" : "white",
-            transition: "color 0.3s ease",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          {videoBitrate.toLocaleString()} kbps
-        </div>
-        {renderGraph(
-          videoHistory,
-          maxVideo,
-          isVideoLow ? "#ef4444" : "#818cf8",
-        )}
-      </div>
+          <span
+            style={{
+              fontSize: "0.72rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              color: "#a1a1aa",
+              fontWeight: 700,
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+            }}
+          >
+            <ShieldCheck size={14} color="#a1a1aa" /> Stream Health
+          </span>
 
-      <div className={styles.metricItem}>
-        <div className={styles.metricHeader}>
-          <span>Audio Bitrate</span>
-          <Volume2 size={16} color={isAudioLow ? "#ef4444" : "#34d399"} />
+          {healthStatus === "RECONNECTING" && (
+            <span
+              style={{
+                fontSize: "0.75rem",
+                color: "#f97316",
+                fontFamily: "monospace",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+              }}
+            >
+              <Clock size={12} /> {reconnectTimeRemaining}s
+            </span>
+          )}
         </div>
+
         <div
-          className={styles.metricValue}
           style={{
-            color: isAudioLow ? "#ef4444" : "white",
-            transition: "color 0.3s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.6rem",
           }}
         >
-          {audioBitrate} kbps
+          <div
+            style={{
+              position: "relative",
+              width: "10px",
+              height: "10px",
+              borderRadius: "50%",
+              backgroundColor: healthConfig.color,
+              boxShadow: `0 0 10px ${healthConfig.color}`,
+            }}
+          >
+            {healthStatus !== "OFFLINE" && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: "-3px",
+                  borderRadius: "50%",
+                  border: `2px solid ${healthConfig.color}`,
+                  opacity: 0.6,
+                  animation: "ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite",
+                }}
+              />
+            )}
+          </div>
+
+          <span
+            style={{
+              fontSize: "1rem",
+              fontWeight: 700,
+              color: healthConfig.color,
+              letterSpacing: "-0.01em",
+            }}
+          >
+            {healthConfig.label}
+          </span>
         </div>
-        {renderGraph(
-          audioHistory,
-          maxAudio,
-          isAudioLow ? "#ef4444" : "#34d399",
-        )}
+
+        <p
+          style={{
+            fontSize: "0.82rem",
+            color: "#d4d4d8",
+            lineHeight: "1.5",
+            margin: 0,
+          }}
+        >
+          {healthConfig.desc}
+        </p>
       </div>
     </div>
   );

@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/relay-stat",
+      "destination": "http://16.170.180.150/stat"
+    },
+    {
+      "source": "/relay-hls/:path*",
+      "destination": "http://16.170.180.150/hls/:path*"
+    },
+    {
+      "source": "/api/sync-router",
+      "destination": "http://16.170.180.150/api/sync-router"
+    }
+  ]
+}

@@ -16,7 +16,14 @@ export const ObsSetupModal = ({
   streamKey,
   onResetKey,
 }: ObsSetupModalProps) => {
-  const rtmpUrl = "rtmp://rtmp.onyekachi.dev/live";
+  const host =
+    typeof window !== "undefined" &&
+    window.location.hostname &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1"
+      ? window.location.hostname
+      : "multi-stream.duckdns.org";
+  const rtmpUrl = `rtmp://${host}/live`;
   const [showKey, setShowKey] = useState(false);
 
   if (!isOpen) return null;

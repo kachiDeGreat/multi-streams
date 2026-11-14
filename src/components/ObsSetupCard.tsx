@@ -1,4 +1,4 @@
-import { Info, Key, Settings as SettingsIcon } from "lucide-react";
+import { Info, Key} from "lucide-react";
 import styles from "../styles/DashboardView.module.css";
 
 interface ObsSetupCardProps {
@@ -8,7 +8,7 @@ interface ObsSetupCardProps {
 
 export const ObsSetupCard = ({
   onRtmpClick,
-  onSettingsClick,
+  // onSettingsClick,
 }: ObsSetupCardProps) => {
   return (
     <div className={styles.obsSetupCard}>
@@ -18,9 +18,9 @@ export const ObsSetupCard = ({
       <div className={styles.obsItem} onClick={onRtmpClick}>
         <Key size={16} /> RTMP Key and URL
       </div>
-      <div className={styles.obsItem} onClick={onSettingsClick}>
+      {/* <div className={styles.obsItem} onClick={onSettingsClick}>
         <SettingsIcon size={16} /> Recommended Settings
-      </div>
+      </div> */}
     </div>
   );
 };
